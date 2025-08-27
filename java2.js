@@ -313,19 +313,26 @@ function initializeCarousel() {
         isTransitioning = enabled;
     };
 
-    // Medir paso real entre tarjetas (ancho + gap) para desplazar en píxeles
+    // Medir paso real entre tarjetas usando la distancia entre bordes izquierdos
     const getSlideStepPx = () => {
-        const anySlide = track.querySelector('.carousel-item');
-        if (!anySlide) return 0;
-        const rect = anySlide.getBoundingClientRect();
+        const items = track.querySelectorAll('.carousel-item');
+        if (items.length === 0) return 0;
+        if (items.length === 1) return items[0].getBoundingClientRect().width;
+        const r0 = items[0].getBoundingClientRect();
+        const r1 = items[1].getBoundingClientRect();
+        const delta = r1.left - r0.left;
+        if (Math.abs(delta) > 0) return delta; // incluye gap real y subpíxel
+        // Fallback: ancho + gap si por algún motivo delta no es válido
+        const rect = items[0].getBoundingClientRect();
         const styles = window.getComputedStyle(track);
         const gap = parseFloat(styles.gap || styles.columnGap || '0') || 0;
-        return Math.round(rect.width + gap);
+        return rect.width + gap;
     };
     const translateTo = () => {
         const step = getSlideStepPx();
         const translateX = -(index) * step;
-        track.style.transform = `translate3d(${translateX}px, 0, 0)`;
+        // evitar pequeñas fugas por subpíxeles al aplicar transform
+        track.style.transform = `translate3d(${translateX.toFixed(3)}px, 0, 0)`;
     };
 
     // Gestión de centro destacado
