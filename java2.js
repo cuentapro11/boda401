@@ -314,22 +314,35 @@ function initializeCarousel() {
         isTransitioning = enabled;
     };
 
-    // Medir ancho real de una diapositiva para desplazar en píxeles (evita huecos)
-    const getSlideWidthPx = () => {
+    // Medir paso real entre tarjetas (ancho + gap) para desplazar en píxeles
+    const getSlideStepPx = () => {
         const anySlide = track.querySelector('.carousel-item');
         if (!anySlide) return 0;
         const rect = anySlide.getBoundingClientRect();
-        return Math.round(rect.width);
+        const styles = window.getComputedStyle(track);
+        const gap = parseFloat(styles.gap || styles.columnGap || '0') || 0;
+        return Math.round(rect.width + gap);
     };
     const translateTo = () => {
-        const slideWidthPx = getSlideWidthPx();
-        const translateX = -(index) * slideWidthPx;
+        const step = getSlideStepPx();
+        const translateX = -(index) * step;
         track.style.transform = `translate3d(${translateX}px, 0, 0)`;
+    };
+
+    // Gestión de centro destacado
+    const centerOffset = Math.floor(visibleSlides / 2);
+    const updateCenterClass = () => {
+        const children = Array.from(track.children);
+        children.forEach(el => el.classList && el.classList.remove('is-center'));
+        const centerIdx = index + centerOffset;
+        const centerEl = children[centerIdx];
+        if (centerEl && centerEl.classList) centerEl.classList.add('is-center');
     };
 
     // Primera posición (sin animación)
     setTransition(false);
     translateTo();
+    updateCenterClass();
     requestAnimationFrame(() => setTransition(true));
 
     const updateCounter = () => {
@@ -343,12 +356,14 @@ function initializeCarousel() {
         index += 1;
         setTransition(true);
         translateTo();
+        updateCenterClass();
     };
     const goPrev = () => {
         if (isTransitioning) return;
         index -= 1;
         setTransition(true);
         translateTo();
+        updateCenterClass();
     };
 
     nextBtn && nextBtn.addEventListener('click', goNext);
@@ -375,6 +390,7 @@ function initializeCarousel() {
             requestAnimationFrame(() => setTransition(true));
         }
         updateCounter();
+        updateCenterClass();
     });
 
     // Reinit básico en resize (reconstruir clones)
@@ -384,6 +400,7 @@ function initializeCarousel() {
             // Solo actualizar la posición con el nuevo ancho
             setTransition(false);
             translateTo();
+            updateCenterClass();
             requestAnimationFrame(() => setTransition(true));
             return;
         }
