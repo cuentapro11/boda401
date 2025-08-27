@@ -313,20 +313,14 @@ function initializeCarousel() {
         isTransitioning = enabled;
     };
 
-    // Medir paso real entre tarjetas usando la distancia entre bordes izquierdos
+    // Medir paso real entre tarjetas: ancho de item (offsetWidth) + gap del track
     const getSlideStepPx = () => {
-        const items = track.querySelectorAll('.carousel-item');
-        if (items.length === 0) return 0;
-        if (items.length === 1) return items[0].getBoundingClientRect().width;
-        const r0 = items[0].getBoundingClientRect();
-        const r1 = items[1].getBoundingClientRect();
-        const delta = r1.left - r0.left;
-        if (Math.abs(delta) > 0) return delta; // incluye gap real y subpíxel
-        // Fallback: ancho + gap si por algún motivo delta no es válido
-        const rect = items[0].getBoundingClientRect();
+        const any = track.querySelector('.carousel-item');
+        if (!any) return 0;
         const styles = window.getComputedStyle(track);
         const gap = parseFloat(styles.gap || styles.columnGap || '0') || 0;
-        return rect.width + gap;
+        const width = any.offsetWidth; // no afectado por transform:scale
+        return width + gap;
     };
     const translateTo = () => {
         const step = getSlideStepPx();

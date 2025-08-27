@@ -2074,7 +2074,7 @@ html, body { overflow-x: hidden; }
 .gallery-section .carousel-item { flex: 0 0 calc((100% - 48px) / 3) !important; max-width: calc((100% - 48px) / 3) !important; }
 
 /* Refuerzo de especificidad para el carrusel de escritorio */
-.gallery-section .carousel-desktop .carousel-track { gap: 24px !important; justify-content: center !important; }
+.gallery-section .carousel-desktop .carousel-track { gap: 24px !important; justify-content: flex-start !important; }
 .gallery-section .carousel-desktop .carousel-item { flex: 0 0 calc((100% - 48px) / 3) !important; max-width: calc((100% - 48px) / 3) !important; }
 /* Imágenes con borde blanco y leve sombra */
 .gallery-section .carousel-item img { border: 4px solid #ffffff !important; border-bottom-width: 10px !important; border-radius: 6px !important; box-shadow: 0 6px 16px rgba(0,0,0,0.12) !important; }
