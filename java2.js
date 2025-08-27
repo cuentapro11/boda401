@@ -291,9 +291,8 @@ function initializeCarousel() {
     if (originalCount === 0) return;
 
     function getVisibleSlides() {
-        if (window.innerWidth <= 768) return 1;
-        if (window.innerWidth <= 1024) return 2;
-        return 3;
+        if (window.innerWidth <= 768) return 1; // móvil
+        return 3; // desktop/tablet: siempre 3 visibles
     }
 
     let visibleSlides = getVisibleSlides();

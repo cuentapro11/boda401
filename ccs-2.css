@@ -1081,9 +1081,6 @@ body {
 }
 
 /* Responsive carousel widths */
-@media (max-width: 1024px) {
-  .carousel-item { flex: 0 0 calc(50% - 0.5rem); }
-}
 @media (max-width: 768px) {
   .carousel-item { flex: 0 0 100%; }
 }
