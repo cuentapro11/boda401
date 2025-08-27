@@ -313,10 +313,18 @@ function initializeCarousel() {
         track.style.transition = enabled ? 'transform 0.5s ease-in-out' : 'none';
         isTransitioning = enabled;
     };
-    const perSlidePercent = () => 100 / visibleSlides;
+
+    // Medir ancho real de una diapositiva para desplazar en píxeles (evita huecos)
+    const getSlideWidthPx = () => {
+        const anySlide = track.querySelector('.carousel-item');
+        if (!anySlide) return 0;
+        const rect = anySlide.getBoundingClientRect();
+        return Math.round(rect.width);
+    };
     const translateTo = () => {
-        const translateX = -(index) * perSlidePercent();
-        track.style.transform = `translateX(${translateX}%)`;
+        const slideWidthPx = getSlideWidthPx();
+        const translateX = -(index) * slideWidthPx;
+        track.style.transform = `translate3d(${translateX}px, 0, 0)`;
     };
 
     // Primera posición (sin animación)
@@ -372,15 +380,18 @@ function initializeCarousel() {
     // Reinit básico en resize (reconstruir clones)
     window.addEventListener('resize', () => {
         const newVisible = getVisibleSlides();
-        if (newVisible === visibleSlides) return;
-        // Reset: limpiar y reconstruir
+        if (newVisible === visibleSlides) {
+            // Solo actualizar la posición con el nuevo ancho
+            setTransition(false);
+            translateTo();
+            requestAnimationFrame(() => setTransition(true));
+            return;
+        }
+        // Reset: limpiar y reconstruir cuando cambia el número visible
         setTransition(false);
-        // Eliminar todos los hijos
         track.innerHTML = '';
-        // Reagregar solo originales
         originalItems.forEach(n => track.appendChild(n));
         track.dataset.loopInit = '';
-        // Re-inicializar
         initializeCarousel();
     }, { passive: true });
 
